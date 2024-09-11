@@ -1,4 +1,6 @@
 using HarmonyLib;
+using MonoMod.RuntimeDetour;
+using UnityEngine.UIElements.Collections;
 
 namespace QuotaScalingMoons.Patches
 {
@@ -7,7 +9,10 @@ namespace QuotaScalingMoons.Patches
     {
         private static void Postfix(RedLocustBees __instance)
         {
-            __instance.hive.SetScrapValue((int) (__instance.hive.scrapValue * Plugin.GetCurrentValue("scrapValueMultiplier") / Plugin.MinQuotaValues["scrapValueMultiplier"].Value));
+            if (Plugin.BoolConfig["hivePatch"].Value)
+            {
+                __instance.hive.SetScrapValue((int)(__instance.hive.scrapValue * Plugin.GetCurrentValue("scrapValueMultiplier") / Plugin.MinQuotaValues["scrapValueMultiplier"].Value));
+            }
         }
     }
 }

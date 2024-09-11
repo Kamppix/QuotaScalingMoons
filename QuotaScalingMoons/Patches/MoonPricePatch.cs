@@ -7,9 +7,12 @@ namespace QuotaScalingMoons.Patches
     {
         private static void Postfix(TerminalNode __result)
         {
-            if (__result.buyRerouteToMoon == -2 || (__result.buyRerouteToMoon != -1 && __result.buyRerouteToMoon != -2))
+            if (Plugin.BoolConfig["moonPricePatch"].Value)
             {
-                __result.itemCost = 0;
+                if (__result.buyRerouteToMoon == -2 || (__result.buyRerouteToMoon != -1 && __result.buyRerouteToMoon != -2))
+                {
+                    __result.itemCost = 0;
+                }
             }
         }
     }
