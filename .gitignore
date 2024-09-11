@@ -65,3 +65,5 @@ crashlytics-build.properties
 
 manifest.json
 icon.png
+*.dll
+*.zip
