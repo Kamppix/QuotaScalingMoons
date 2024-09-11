@@ -5,7 +5,7 @@ Currently, the moons in the first quota start at Experimentation level (which is
 
 <br>
 
-### <u>All players need to have the mod installed and identically configured.</u>
+### All players need to have the mod installed and identically configured.
 
 (apart from scrap and enemy values, which are free to play with server-side)
 
