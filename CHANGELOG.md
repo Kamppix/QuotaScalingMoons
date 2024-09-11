@@ -1,3 +1,9 @@
+## v0.1.2
+
+### Changes
+- Set the default value of `EnableApparaticeValueAdjust` to false for now
+- Updated readme guide
+
 ## v0.1.1
 
 ### New
