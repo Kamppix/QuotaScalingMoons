@@ -1,6 +1,4 @@
 using HarmonyLib;
-using MonoMod.RuntimeDetour;
-using UnityEngine.UIElements.Collections;
 
 namespace QuotaScalingMoons.Patches
 {
