@@ -56,27 +56,27 @@ namespace QuotaScalingMoons
         {
             BoolConfig.Add("moonBalancePatch", Config.Bind(
                 "Toggles",
-                "MoonBalancing",
+                "EnableMoonBalancing",
                 true)
             );
             BoolConfig.Add("moonPricePatch", Config.Bind(
                 "Toggles",
-                "FreeMoons",
+                "EnableFreeMoons",
                 true)
             );
             BoolConfig.Add("scrapPatch", Config.Bind(
                 "Toggles",
-                "ScrapValueAdjust",
+                "EnableScrapValueAdjust",
                 true)
             );
             BoolConfig.Add("appPatch", Config.Bind(
                 "Toggles",
-                "ApparaticeValueAdjust",
-                true)
+                "EnableApparaticeValueAdjust",
+                false)
             );
             BoolConfig.Add("hivePatch", Config.Bind(
                 "Toggles",
-                "HiveValueAdjust",
+                "EnableHiveValueAdjust",
                 true)
             );
 
