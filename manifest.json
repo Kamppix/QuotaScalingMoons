@@ -1,0 +1,7 @@
+{
+	"name": "QuotaScalingMoons",
+	"description": "Balances and quota-scales moons, while also making all of them free to enter.",
+	"version_number": "1.0.0",
+	"dependencies": [],
+	"website_url": "https://github.com/Kamppix/QuotaScalingMoons",
+}
