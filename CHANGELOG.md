@@ -1,4 +1,4 @@
-## v0.1.2
+## v0.2.0
 
 ### New
 - Made every moon use Artifice enemy spawn chance multiplier curves to balance enemy spawning
