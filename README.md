@@ -7,7 +7,7 @@ Currently, the moons in the first quota start at Experimentation level (which is
 
 ### All players need to have the mod installed and identically configured.
 
-(apart from scrap and enemy values, which are free to play with server-side)
+(apart from scrap and enemy related stuff, which are free to play with server-side)
 
 <br>
 
@@ -18,4 +18,4 @@ Currently, the moons in the first quota start at Experimentation level (which is
 
 #### Future plans:
 
-- Implement enemy and trap spawn curve balancing
+- Balance trap spawn chance curves

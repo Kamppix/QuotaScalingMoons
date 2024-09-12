@@ -1,8 +1,10 @@
 ## v0.1.2
 
+### New
+- Made every moon use Artifice enemy spawn chance multiplier curves to balance enemy spawning
+
 ### Changes
-- Set the default value of `EnableApparaticeValueAdjust` to false for now
-- Updated readme guide
+- Set the default value of `EnableApparaticeValueAdjust` to false (for now)
 
 ## v0.1.1
 
