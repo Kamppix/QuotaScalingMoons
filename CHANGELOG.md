@@ -1,3 +1,10 @@
+## v0.3.0
+
+- Added an optional third quota for changing how variables scale after limiting some of them to the second quota values
+	- When using default values, the third quota doesn't change scaling past the second quota
+- Fixed a bug where map generation would get stuck if `MaxScrap` was lower than `MinScrap`
+- Adjusted config layout
+
 ## v0.2.3
 
 - Added optional limiters for all quota scaling config variables

@@ -1,4 +1,5 @@
 using HarmonyLib;
+using System;
 
 namespace QuotaScalingMoons.Patches
 {
@@ -17,7 +18,7 @@ namespace QuotaScalingMoons.Patches
                     level.riskLevel = Plugin.GetCurrentRiskLevel();
                     level.factorySizeMultiplier = Plugin.GetCurrentValue("MapSizeMultiplier");
                     level.minScrap = (int)Plugin.GetCurrentValue("MinScrap");
-                    level.maxScrap = (int)Plugin.GetCurrentValue("MaxScrap");
+                    level.maxScrap = Math.Max((int)Plugin.GetCurrentValue("MaxScrap"), level.minScrap);
                     level.maxEnemyPowerCount = (int)Plugin.GetCurrentValue("MaxIndoorPower");
                     level.maxOutsideEnemyPowerCount = (int)Plugin.GetCurrentValue("MaxOutdoorPower");
                     level.enemySpawnChanceThroughoutDay = StartOfRound.Instance.levels[ARTIFICE].enemySpawnChanceThroughoutDay;
