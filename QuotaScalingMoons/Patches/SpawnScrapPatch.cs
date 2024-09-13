@@ -7,9 +7,9 @@ namespace QuotaScalingMoons.Patches
     {
         private static void Prefix(RoundManager __instance)
         {
-            if (Plugin.BoolConfig["scrapPatch"].Value)
+            if (Plugin.BoolConfig["EnableScrapValueScaling"].Value)
             {
-                __instance.scrapValueMultiplier = Plugin.GetCurrentValue("scrapValueMultiplier");
+                __instance.scrapValueMultiplier = Plugin.GetCurrentValue("ScrapValueMultiplier");
             }
         }
     }

@@ -9,17 +9,17 @@ namespace QuotaScalingMoons.Patches
 
         private static void Prefix(RoundManager __instance)
         {
-            if (Plugin.BoolConfig["moonBalancePatch"].Value)
+            if (Plugin.BoolConfig["EnableMoonBalancing"].Value)
             {
                 SelectableLevel level = __instance.currentLevel;
                 if (level.name != "CompanyBuildingLevel")
                 {
                     level.riskLevel = Plugin.GetCurrentRiskLevel();
-                    level.factorySizeMultiplier = Plugin.GetCurrentValue("factorySizeMultiplier");
-                    level.minScrap = (int)Plugin.GetCurrentValue("minScrap");
-                    level.maxScrap = (int)Plugin.GetCurrentValue("maxScrap");
-                    level.maxEnemyPowerCount = (int)Plugin.GetCurrentValue("maxEnemyPowerCount");
-                    level.maxOutsideEnemyPowerCount = (int)Plugin.GetCurrentValue("maxOutsideEnemyPowerCount");
+                    level.factorySizeMultiplier = Plugin.GetCurrentValue("MapSizeMultiplier");
+                    level.minScrap = (int)Plugin.GetCurrentValue("MinScrap");
+                    level.maxScrap = (int)Plugin.GetCurrentValue("MaxScrap");
+                    level.maxEnemyPowerCount = (int)Plugin.GetCurrentValue("MaxIndoorPower");
+                    level.maxOutsideEnemyPowerCount = (int)Plugin.GetCurrentValue("MaxOutdoorPower");
                     level.enemySpawnChanceThroughoutDay = StartOfRound.Instance.levels[ARTIFICE].enemySpawnChanceThroughoutDay;
                     level.outsideEnemySpawnChanceThroughDay = StartOfRound.Instance.levels[ARTIFICE].outsideEnemySpawnChanceThroughDay;
                 }

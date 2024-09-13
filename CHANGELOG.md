@@ -1,3 +1,9 @@
+## v0.2.3
+
+- Added optional limiters for all quota scaling config variables
+- Made turning off `EnableMoonBalancing` disable scrap value adjustment based on the moon's average scrap value
+- Made small changes to some config names and descriptions
+
 ## v0.2.1
 
 - Changed apparatice and beehive value scaling to not take the moon's average scrap value into account
@@ -15,4 +21,4 @@
 
 ## v0.1.0
 
-- Initial release born from an all-nighter (full of bugs and stuff)
+- Initial beta release born from an all-nighter (full of bugs and stuff)
