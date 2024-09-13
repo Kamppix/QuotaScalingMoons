@@ -9,7 +9,7 @@ namespace QuotaScalingMoons.Patches
         {
             if (Plugin.BoolConfig["appPatch"].Value)
             {
-                __instance.SetScrapValue((int)(__instance.scrapValue * Plugin.GetCurrentValue("scrapValueMultiplier") / Plugin.MinQuotaValues["scrapValueMultiplier"].Value));
+                __instance.SetScrapValue((int)(__instance.scrapValue * Plugin.GetCurrentValue("scrapValueMultiplier", true) / Plugin.MinQuotaValues["scrapValueMultiplier"].Value));
             }
         }
     }

@@ -54,30 +54,35 @@ namespace QuotaScalingMoons
 
         private void AddConfig()
         {
-            BoolConfig.Add("moonBalancePatch", Config.Bind(
-                "Toggles",
-                "EnableMoonBalancing",
-                true)
-            );
             BoolConfig.Add("moonPricePatch", Config.Bind(
                 "Toggles",
                 "EnableFreeMoons",
-                true)
+                true,
+                "Whether or not all moons should be free to enter")
+            );
+            BoolConfig.Add("moonBalancePatch", Config.Bind(
+                "Toggles",
+                "EnableMoonBalancing",
+                true,
+                "Whether or not moon balancing should be turned on")
             );
             BoolConfig.Add("scrapPatch", Config.Bind(
                 "Toggles",
                 "EnableScrapValueAdjust",
-                true)
+                true,
+                "Whether or not scrap value should be adjusted based on the profit quota")
             );
             BoolConfig.Add("appPatch", Config.Bind(
                 "Toggles",
                 "EnableApparaticeValueAdjust",
-                false)
+                true,
+                "Whether or not apparatice value should be adjusted based on the profit quota")
             );
             BoolConfig.Add("hivePatch", Config.Bind(
                 "Toggles",
                 "EnableHiveValueAdjust",
-                true)
+                true,
+                "Whether or not beehive value should be adjusted based on the profit quota")
             );
 
 
@@ -155,14 +160,14 @@ namespace QuotaScalingMoons
             );
         }
 
-        internal static float GetCurrentValue(String key)
+        internal static float GetCurrentValue(String key, bool ignoreAverageValue = false)
         {
             float min = MinQuotaValues[key].Value;
             float add = HighQuotaValues[key].Value - min;
             float progress = (TimeOfDay.Instance.profitQuota - MinQuotaValues["profitQuota"].Value) / (HighQuotaValues["profitQuota"].Value - MinQuotaValues["profitQuota"].Value);
             float result = min + add * progress;
 
-            if (key == "scrapValueMultiplier")
+            if (key == "scrapValueMultiplier" && !ignoreAverageValue)
             {
                 result /= GetScrapValueDivider();
             }
