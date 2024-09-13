@@ -7,15 +7,15 @@ Currently, the moons in the first quota start at Experimentation level (which is
 
 ### All players need to have the mod installed and identically configured.
 
-(apart from scrap and enemy related stuff, which are free to play with server-side)
+(apart from scrap and enemy spawning stuff, which are free to play with server-side)
 
 <br>
 
-#### Known bugs:
+#### Known issues:
 
-- Single Scrap Day loot has incorrect value
-- Apparatice has incorrect value
+- Single Scrap Day loot *might* have incorrect value / is clamped to 50-170 value
 
 #### Future plans:
 
-- Balance trap spawn chance curves
+- Balance trap spawns between moons
+- Add quota-scaling for enemy and trap spawn chances
