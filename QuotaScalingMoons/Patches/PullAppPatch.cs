@@ -7,9 +7,9 @@ namespace QuotaScalingMoons.Patches
     {
         private static void Prefix(LungProp __instance)
         {
-            if (Plugin.BoolConfig["appPatch"].Value)
+            if (Plugin.BoolConfig["EnableApparaticeValueScaling"].Value)
             {
-                __instance.SetScrapValue((int)(__instance.scrapValue * Plugin.GetCurrentValue("scrapValueMultiplier", true) / Plugin.MinQuotaValues["scrapValueMultiplier"].Value));
+                __instance.SetScrapValue((int)(__instance.scrapValue * Plugin.GetCurrentValue("ScrapValueMultiplier", true) / Plugin.MinQuotaValues["ScrapValueMultiplier"].Value));
             }
         }
     }

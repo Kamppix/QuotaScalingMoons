@@ -7,9 +7,9 @@ namespace QuotaScalingMoons.Patches
     {
         private static void Postfix(RedLocustBees __instance)
         {
-            if (Plugin.BoolConfig["hivePatch"].Value)
+            if (Plugin.BoolConfig["EnableHiveValueScaling"].Value)
             {
-                __instance.hive.SetScrapValue((int)(__instance.hive.scrapValue * Plugin.GetCurrentValue("scrapValueMultiplier", true) / Plugin.MinQuotaValues["scrapValueMultiplier"].Value));
+                __instance.hive.SetScrapValue((int)(__instance.hive.scrapValue * Plugin.GetCurrentValue("ScrapValueMultiplier", true) / Plugin.MinQuotaValues["ScrapValueMultiplier"].Value));
             }
         }
     }

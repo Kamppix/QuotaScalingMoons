@@ -52,122 +52,20 @@ namespace QuotaScalingMoons
             Logger.LogDebug("Finished unpatching!");
         }
 
-        private void AddConfig()
-        {
-            BoolConfig.Add("moonPricePatch", Config.Bind(
-                "Toggles",
-                "EnableFreeMoons",
-                true,
-                "Whether or not all moons should be free to enter")
-            );
-            BoolConfig.Add("moonBalancePatch", Config.Bind(
-                "Toggles",
-                "EnableMoonBalancing",
-                true,
-                "Whether or not moon balancing should be turned on")
-            );
-            BoolConfig.Add("scrapPatch", Config.Bind(
-                "Toggles",
-                "EnableScrapValueAdjust",
-                true,
-                "Whether or not scrap value should be adjusted based on the profit quota")
-            );
-            BoolConfig.Add("appPatch", Config.Bind(
-                "Toggles",
-                "EnableApparaticeValueAdjust",
-                true,
-                "Whether or not apparatice value should be adjusted based on the profit quota")
-            );
-            BoolConfig.Add("hivePatch", Config.Bind(
-                "Toggles",
-                "EnableHiveValueAdjust",
-                true,
-                "Whether or not beehive value should be adjusted based on the profit quota")
-            );
-
-
-            MinQuotaValues.Add("profitQuota", Config.Bind(
-                "First Quota Values",
-                "TargetQuota",
-                130f)
-            );
-            MinQuotaValues.Add("factorySizeMultiplier", Config.Bind(
-                "First Quota Values",
-                "MapSizeMultiplier",
-                1.0f)
-            );
-            MinQuotaValues.Add("scrapValueMultiplier", Config.Bind(
-                "First Quota Values",
-                "ScrapValueMultiplier",
-                0.4f)
-            );
-            MinQuotaValues.Add("minScrap", Config.Bind(
-                "First Quota Values",
-                "MinScrap",
-                8f)
-            );
-            MinQuotaValues.Add("maxScrap", Config.Bind(
-                "First Quota Values",
-                "MaxScrap",
-                12f)
-            );
-            MinQuotaValues.Add("maxEnemyPowerCount", Config.Bind(
-                "First Quota Values",
-                "MaxIndoorPower",
-                4f)
-            );
-            MinQuotaValues.Add("maxOutsideEnemyPowerCount", Config.Bind(
-                "First Quota Values",
-                "MaxOutdoorPower",
-                8f)
-            );
-
-
-            HighQuotaValues.Add("profitQuota", Config.Bind(
-                "High Quota Values",
-                "TargetQuota",
-                3536.25f)
-            );
-            HighQuotaValues.Add("factorySizeMultiplier", Config.Bind(
-                "High Quota Values",
-                "MapSizeMultiplier",
-                1.8f)
-            );
-            HighQuotaValues.Add("scrapValueMultiplier", Config.Bind(
-                "High Quota Values",
-                "ScrapValueMultiplier",
-                0.74f)
-            );
-            HighQuotaValues.Add("minScrap", Config.Bind(
-                "High Quota Values",
-                "MinScrap",
-                26f)
-            );
-            HighQuotaValues.Add("maxScrap", Config.Bind(
-                "High Quota Values",
-                "MaxScrap",
-                31f)
-            );
-            HighQuotaValues.Add("maxEnemyPowerCount", Config.Bind(
-                "High Quota Values",
-                "MaxIndoorPower",
-                13f)
-            );
-            HighQuotaValues.Add("maxOutsideEnemyPowerCount", Config.Bind(
-                "High Quota Values",
-                "MaxOutdoorPower",
-                13f)
-            );
-        }
-
         internal static float GetCurrentValue(String key, bool ignoreAverageValue = false)
         {
             float min = MinQuotaValues[key].Value;
             float add = HighQuotaValues[key].Value - min;
-            float progress = (TimeOfDay.Instance.profitQuota - MinQuotaValues["profitQuota"].Value) / (HighQuotaValues["profitQuota"].Value - MinQuotaValues["profitQuota"].Value);
+            float progress = (TimeOfDay.Instance.profitQuota - MinQuotaValues["TargetQuota"].Value) / (HighQuotaValues["TargetQuota"].Value - MinQuotaValues["TargetQuota"].Value);
             float result = min + add * progress;
 
-            if (key == "scrapValueMultiplier" && !ignoreAverageValue)
+            if ((BoolConfig.ContainsKey("Limit" + key) && BoolConfig["Limit" + key].Value)
+                || ((key == "MinScrap" || key == "MaxScrap") && BoolConfig["LimitScrapAmount"].Value))
+            {
+                result = Math.Min(result, HighQuotaValues[key].Value);
+            }
+
+            if (key == "ScrapValueMultiplier" && !ignoreAverageValue && BoolConfig["EnableMoonBalancing"].Value)
             {
                 result /= GetScrapValueDivider();
             }
@@ -196,7 +94,7 @@ namespace QuotaScalingMoons
 
         internal static string GetCurrentRiskLevel()
         {
-            int level = (int) (6 * (TimeOfDay.Instance.profitQuota - MinQuotaValues["profitQuota"].Value) / (HighQuotaValues["profitQuota"].Value - MinQuotaValues["profitQuota"].Value));
+            int level = (int) (6 * (TimeOfDay.Instance.profitQuota - MinQuotaValues["TargetQuota"].Value) / (HighQuotaValues["TargetQuota"].Value - MinQuotaValues["TargetQuota"].Value));
             switch (level)
             {
                 case 0:
@@ -210,6 +108,146 @@ namespace QuotaScalingMoons
                 default:
                     return "S" + String.Concat(Enumerable.Repeat("+", level - 4));
             }
+        }
+
+        private void AddConfig()
+        {
+            BoolConfig.Add("EnableFreeMoons", Config.Bind(
+                "Toggles",
+                "EnableFreeMoons",
+                true,
+                "Whether or not all moons should be free to route to")
+            );
+            BoolConfig.Add("EnableMoonBalancing", Config.Bind(
+                "Toggles",
+                "EnableMoonBalancing",
+                true,
+                "Whether or not the properties of different moons should be balanced")
+            );
+            BoolConfig.Add("EnableScrapValueScaling", Config.Bind(
+                "Toggles",
+                "EnableScrapValueScaling",
+                true,
+                "Whether or not scrap value should be scaled based on the profit quota")
+            );
+            BoolConfig.Add("EnableApparaticeValueScaling", Config.Bind(
+                "Toggles",
+                "EnableApparaticeValueScaling",
+                true,
+                "Whether or not apparatice value should be scaled based on the profit quota")
+            );
+            BoolConfig.Add("EnableHiveValueScaling", Config.Bind(
+                "Toggles",
+                "EnableHiveValueScaling",
+                true,
+                "Whether or not beehive value should be scaled based on the profit quota")
+            );
+
+
+            MinQuotaValues.Add("TargetQuota", Config.Bind(
+                "First Quota Values",
+                "TargetQuota",
+                130f)
+            );
+            MinQuotaValues.Add("MapSizeMultiplier", Config.Bind(
+                "First Quota Values",
+                "MapSizeMultiplier",
+                1.0f)
+            );
+            MinQuotaValues.Add("ScrapValueMultiplier", Config.Bind(
+                "First Quota Values",
+                "ScrapValueMultiplier",
+                0.4f)
+            );
+            MinQuotaValues.Add("MinScrap", Config.Bind(
+                "First Quota Values",
+                "MinScrap",
+                8f)
+            );
+            MinQuotaValues.Add("MaxScrap", Config.Bind(
+                "First Quota Values",
+                "MaxScrap",
+                12f)
+            );
+            MinQuotaValues.Add("MaxIndoorPower", Config.Bind(
+                "First Quota Values",
+                "MaxIndoorEnemyPower",
+                4f)
+            );
+            MinQuotaValues.Add("MaxOutdoorPower", Config.Bind(
+                "First Quota Values",
+                "MaxOutdoorEnemyPower",
+                8f)
+            );
+
+
+            HighQuotaValues.Add("TargetQuota", Config.Bind(
+                "High Quota Values",
+                "TargetQuota",
+                3536.25f)
+            );
+            HighQuotaValues.Add("MapSizeMultiplier", Config.Bind(
+                "High Quota Values",
+                "MapSizeMultiplier",
+                1.8f)
+            );
+            HighQuotaValues.Add("ScrapValueMultiplier", Config.Bind(
+                "High Quota Values",
+                "ScrapValueMultiplier",
+                0.74f)
+            );
+            HighQuotaValues.Add("MinScrap", Config.Bind(
+                "High Quota Values",
+                "MinScrap",
+                26f)
+            );
+            HighQuotaValues.Add("MaxScrap", Config.Bind(
+                "High Quota Values",
+                "MaxScrap",
+                31f)
+            );
+            HighQuotaValues.Add("MaxIndoorPower", Config.Bind(
+                "High Quota Values",
+                "MaxIndoorEnemyPower",
+                13f)
+            );
+            HighQuotaValues.Add("MaxOutdoorPower", Config.Bind(
+                "High Quota Values",
+                "MaxOutdoorEnemyPower",
+                13f)
+            );
+
+
+            BoolConfig.Add("LimitMapSizeMultiplier", Config.Bind(
+                "Limiters",
+                "LimitMapSize",
+                false,
+                "Limits MapSizeMultiplier to its high quota value instead of scaling infinitely")
+            );
+            BoolConfig.Add("LimitScrapValueMultiplier", Config.Bind(
+                "Limiters",
+                "LimitScrapValue",
+                false,
+                "Limits ScrapValueMultiplier to its high quota value instead of scaling infinitely")
+            );
+            BoolConfig.Add("LimitScrapAmount", Config.Bind(
+                "Limiters",
+                "LimitScrapAmount",
+                false,
+                "Limits MinScrap and MaxScrap to their high quota values instead of scaling infinitely")
+            );
+            BoolConfig.Add("LimitMaxIndoorPower", Config.Bind(
+                "Limiters",
+                "LimitMaxIndoorEnemyPower",
+                false,
+                "Limits MaxIndoorEnemyPower to its high quota value instead of scaling infinitely")
+            );
+            BoolConfig.Add("LimitMaxOutdoorPower", Config.Bind(
+                "Limiters",
+                "LimitMaxOutdoorEnemyPower",
+                false,
+                "Limits MaxOutdoorEnemyPower to its high quota value instead of scaling infinitely")
+            );
         }
     }
 }
