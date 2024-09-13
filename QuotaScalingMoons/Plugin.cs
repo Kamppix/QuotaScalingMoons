@@ -16,9 +16,10 @@ namespace QuotaScalingMoons
         internal static Harmony? Harmony { get; set; }
 
         public static Dictionary<String, ConfigEntry<bool>> BoolConfig = new Dictionary<String, ConfigEntry<bool>>();
-        public static Dictionary<String, ConfigEntry<float>> MinQuotaValues = new Dictionary<String, ConfigEntry<float>>();
-        public static Dictionary<String, ConfigEntry<float>> HighQuotaValues = new Dictionary<String, ConfigEntry<float>>();
-        
+        private static Dictionary<String, ConfigEntry<float>> FirstQuotaValues = new Dictionary<String, ConfigEntry<float>>();
+        private static Dictionary<String, ConfigEntry<float>> SecondQuotaValues = new Dictionary<String, ConfigEntry<float>>();
+        private static Dictionary<String, ConfigEntry<float>> ThirdQuotaValues = new Dictionary<String, ConfigEntry<float>>();
+
         private const float EXP_AVERAGE_VALUE = 31.71354f;
 
         private void Awake()
@@ -52,20 +53,34 @@ namespace QuotaScalingMoons
             Logger.LogDebug("Finished unpatching!");
         }
 
-        internal static float GetCurrentValue(String key, bool ignoreAverageValue = false)
+        internal static float GetCurrentValue(String key, bool ignoreAvgScrapValue = false)
         {
-            float min = MinQuotaValues[key].Value;
-            float add = HighQuotaValues[key].Value - min;
-            float progress = (TimeOfDay.Instance.profitQuota - MinQuotaValues["TargetQuota"].Value) / (HighQuotaValues["TargetQuota"].Value - MinQuotaValues["TargetQuota"].Value);
+            Dictionary<String, ConfigEntry<float>> MinQuota;
+            Dictionary<String, ConfigEntry<float>> MaxQuota;
+
+            if (BoolConfig["EnableThirdQuota"].Value && TimeOfDay.Instance.profitQuota > SecondQuotaValues["TargetQuota"].Value)
+            {
+                MinQuota = SecondQuotaValues;
+                MaxQuota = ThirdQuotaValues;
+            }
+            else
+            {
+                MinQuota = FirstQuotaValues;
+                MaxQuota = SecondQuotaValues;
+            }
+
+            float min = MinQuota[key].Value;
+            float add = MaxQuota[key].Value - min;
+            float progress = (TimeOfDay.Instance.profitQuota - MinQuota["TargetQuota"].Value) / (MaxQuota["TargetQuota"].Value - MinQuota["TargetQuota"].Value);
             float result = min + add * progress;
 
             if ((BoolConfig.ContainsKey("Limit" + key) && BoolConfig["Limit" + key].Value)
                 || ((key == "MinScrap" || key == "MaxScrap") && BoolConfig["LimitScrapAmount"].Value))
             {
-                result = Math.Min(result, HighQuotaValues[key].Value);
+                result = Math.Min(result, SecondQuotaValues[key].Value);
             }
 
-            if (key == "ScrapValueMultiplier" && !ignoreAverageValue && BoolConfig["EnableMoonBalancing"].Value)
+            if (key == "ScrapValueMultiplier" && !ignoreAvgScrapValue && BoolConfig["EnableMoonBalancing"].Value)
             {
                 result /= GetScrapValueDivider();
             }
@@ -94,7 +109,7 @@ namespace QuotaScalingMoons
 
         internal static string GetCurrentRiskLevel()
         {
-            int level = (int) (6 * (TimeOfDay.Instance.profitQuota - MinQuotaValues["TargetQuota"].Value) / (HighQuotaValues["TargetQuota"].Value - MinQuotaValues["TargetQuota"].Value));
+            int level = (int) (6 * (TimeOfDay.Instance.profitQuota - FirstQuotaValues["TargetQuota"].Value) / (SecondQuotaValues["TargetQuota"].Value - FirstQuotaValues["TargetQuota"].Value));
             switch (level)
             {
                 case 0:
@@ -144,109 +159,150 @@ namespace QuotaScalingMoons
             );
 
 
-            MinQuotaValues.Add("TargetQuota", Config.Bind(
-                "First Quota Values",
+            FirstQuotaValues.Add("TargetQuota", Config.Bind(
+                "First Quota",
                 "TargetQuota",
                 130f)
             );
-            MinQuotaValues.Add("MapSizeMultiplier", Config.Bind(
-                "First Quota Values",
+            FirstQuotaValues.Add("MapSizeMultiplier", Config.Bind(
+                "First Quota",
                 "MapSizeMultiplier",
                 1.0f)
             );
-            MinQuotaValues.Add("ScrapValueMultiplier", Config.Bind(
-                "First Quota Values",
+            FirstQuotaValues.Add("ScrapValueMultiplier", Config.Bind(
+                "First Quota",
                 "ScrapValueMultiplier",
                 0.4f)
             );
-            MinQuotaValues.Add("MinScrap", Config.Bind(
-                "First Quota Values",
+            FirstQuotaValues.Add("MinScrap", Config.Bind(
+                "First Quota",
                 "MinScrap",
                 8f)
             );
-            MinQuotaValues.Add("MaxScrap", Config.Bind(
-                "First Quota Values",
+            FirstQuotaValues.Add("MaxScrap", Config.Bind(
+                "First Quota",
                 "MaxScrap",
                 12f)
             );
-            MinQuotaValues.Add("MaxIndoorPower", Config.Bind(
-                "First Quota Values",
+            FirstQuotaValues.Add("MaxIndoorPower", Config.Bind(
+                "First Quota",
                 "MaxIndoorEnemyPower",
                 4f)
             );
-            MinQuotaValues.Add("MaxOutdoorPower", Config.Bind(
-                "First Quota Values",
+            FirstQuotaValues.Add("MaxOutdoorPower", Config.Bind(
+                "First Quota",
                 "MaxOutdoorEnemyPower",
                 8f)
             );
 
 
-            HighQuotaValues.Add("TargetQuota", Config.Bind(
-                "High Quota Values",
+            SecondQuotaValues.Add("TargetQuota", Config.Bind(
+                "Second Quota",
                 "TargetQuota",
                 3536.25f)
             );
-            HighQuotaValues.Add("MapSizeMultiplier", Config.Bind(
-                "High Quota Values",
+            SecondQuotaValues.Add("MapSizeMultiplier", Config.Bind(
+                "Second Quota",
                 "MapSizeMultiplier",
                 1.8f)
             );
-            HighQuotaValues.Add("ScrapValueMultiplier", Config.Bind(
-                "High Quota Values",
+            SecondQuotaValues.Add("ScrapValueMultiplier", Config.Bind(
+                "Second Quota",
                 "ScrapValueMultiplier",
                 0.74f)
             );
-            HighQuotaValues.Add("MinScrap", Config.Bind(
-                "High Quota Values",
+            SecondQuotaValues.Add("MinScrap", Config.Bind(
+                "Second Quota",
                 "MinScrap",
                 26f)
             );
-            HighQuotaValues.Add("MaxScrap", Config.Bind(
-                "High Quota Values",
+            SecondQuotaValues.Add("MaxScrap", Config.Bind(
+                "Second Quota",
                 "MaxScrap",
                 31f)
             );
-            HighQuotaValues.Add("MaxIndoorPower", Config.Bind(
-                "High Quota Values",
+            SecondQuotaValues.Add("MaxIndoorPower", Config.Bind(
+                "Second Quota",
                 "MaxIndoorEnemyPower",
                 13f)
             );
-            HighQuotaValues.Add("MaxOutdoorPower", Config.Bind(
-                "High Quota Values",
+            SecondQuotaValues.Add("MaxOutdoorPower", Config.Bind(
+                "Second Quota",
                 "MaxOutdoorEnemyPower",
                 13f)
             );
-
-
             BoolConfig.Add("LimitMapSizeMultiplier", Config.Bind(
-                "Limiters",
+                "Second Quota",
                 "LimitMapSize",
                 false,
-                "Limits MapSizeMultiplier to its high quota value instead of scaling infinitely")
+                "Limits MapSizeMultiplier to its second quota value instead of scaling infinitely.")
             );
             BoolConfig.Add("LimitScrapValueMultiplier", Config.Bind(
-                "Limiters",
+                "Second Quota",
                 "LimitScrapValue",
                 false,
-                "Limits ScrapValueMultiplier to its high quota value instead of scaling infinitely")
+                "Limits ScrapValueMultiplier to its second quota value instead of scaling infinitely.")
             );
             BoolConfig.Add("LimitScrapAmount", Config.Bind(
-                "Limiters",
+                "Second Quota",
                 "LimitScrapAmount",
                 false,
-                "Limits MinScrap and MaxScrap to their high quota values instead of scaling infinitely")
+                "Limits MinScrap and MaxScrap to their second quota values instead of scaling infinitely.")
             );
             BoolConfig.Add("LimitMaxIndoorPower", Config.Bind(
-                "Limiters",
+                "Second Quota",
                 "LimitMaxIndoorEnemyPower",
                 false,
-                "Limits MaxIndoorEnemyPower to its high quota value instead of scaling infinitely")
+                "Limits MaxIndoorEnemyPower to its second quota value instead of scaling infinitely.")
             );
             BoolConfig.Add("LimitMaxOutdoorPower", Config.Bind(
-                "Limiters",
+                "Second Quota",
                 "LimitMaxOutdoorEnemyPower",
                 false,
-                "Limits MaxOutdoorEnemyPower to its high quota value instead of scaling infinitely")
+                "Limits MaxOutdoorEnemyPower to its second quota value instead of scaling infinitely.")
+            );
+
+
+            BoolConfig.Add("EnableThirdQuota", Config.Bind(
+                "Third Quota",
+                "EnableThirdQuota",
+                false,
+                "Enables the optional third quota to scale towards after the second quota.")
+            );
+            ThirdQuotaValues.Add("TargetQuota", Config.Bind(
+                "Third Quota",
+                "TargetQuota",
+                6942.5f)
+            );
+            ThirdQuotaValues.Add("MapSizeMultiplier", Config.Bind(
+                "Third Quota",
+                "MapSizeMultiplier",
+                2.6f)
+            );
+            ThirdQuotaValues.Add("ScrapValueMultiplier", Config.Bind(
+                "Third Quota",
+                "ScrapValueMultiplier",
+                1.08f)
+            );
+            ThirdQuotaValues.Add("MinScrap", Config.Bind(
+                "Third Quota",
+                "MinScrap",
+                44f)
+            );
+            ThirdQuotaValues.Add("MaxScrap", Config.Bind(
+                "Third Quota",
+                "MaxScrap",
+                50f)
+            );
+            ThirdQuotaValues.Add("MaxIndoorPower", Config.Bind(
+                "Third Quota",
+                "MaxIndoorEnemyPower",
+                22f)
+            );
+            ThirdQuotaValues.Add("MaxOutdoorPower", Config.Bind(
+                "Third Quota",
+                "MaxOutdoorEnemyPower",
+                18f)
             );
         }
     }

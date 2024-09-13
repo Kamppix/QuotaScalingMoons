@@ -9,7 +9,7 @@ namespace QuotaScalingMoons.Patches
         {
             if (Plugin.BoolConfig["EnableHiveValueScaling"].Value)
             {
-                __instance.hive.SetScrapValue((int)(__instance.hive.scrapValue * Plugin.GetCurrentValue("ScrapValueMultiplier", true) / Plugin.MinQuotaValues["ScrapValueMultiplier"].Value));
+                __instance.hive.SetScrapValue((int)(__instance.hive.scrapValue * Plugin.GetCurrentValue("ScrapValueMultiplier", true) / 0.4f));
             }
         }
     }
